@@ -4,23 +4,28 @@ import { User } from "../models/user.models.js";
 import { ApiError } from "../utitles/ApiError.js";
 
 const verifyJWT = async (req, res, next) => {
+
   try {
     //get access token from cookies
     const token =
       req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
-
     // Check if token exists
     if (!token) {
       throw new ApiError(401, " Unauthorized request");
     }
-    // Verify token
-    const decodetoken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
+    console.log("Token received:", !!token);
+    // Verify token
+    const decodedtoken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    console.log("Decoded token:", decodedtoken);
     // Find user from decoded token
-    const user = await User.findById(decodetoken._id).select(
+    const user = await User.findById(decodedtoken._id).select(
       "-password -refreshToken",
     );
+
+console.log("User found:", user);
     // Check if user exists
     if (!user) {
       throw new ApiError(401, "Invalid access token");
