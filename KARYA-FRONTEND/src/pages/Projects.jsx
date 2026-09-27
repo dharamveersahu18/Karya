@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
+import EmptyState from "../components/EmptyState";
 import {
   getProjects,
   createProject,
@@ -8,7 +11,6 @@ import {
 import { Link } from "react-router-dom";
 function Projects() {
   const [projects, setProjects] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -25,7 +27,7 @@ function Projects() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-
+      setError("");
       const response = await getProjects();
 
       console.log("Projects response:", response);
@@ -136,9 +138,18 @@ function Projects() {
     }
   };
 
-  if (loading) {
-    return <p>Loading projects...</p>;
-  }
+if (loading) {
+  return <LoadingSpinner text="Loading projects..." />;
+}
+
+if (error) {
+  return (
+    <ErrorMessage
+      message={error}
+      onRetry={fetchProjects}
+    />
+  );
+}
 
   return (
     <div>
@@ -251,17 +262,14 @@ function Projects() {
       )}
 
       {/* Projects */}
-      {projects.length === 0 ? (
-        <div className="rounded-xl border p-8 text-center">
-          <h2 className="text-xl font-semibold">No projects yet</h2>
-
-          <p className="mt-2 text-gray-500">
-            Create your first project to get started.
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-     {projects.map((project) => (
+  {projects.length === 0 ? (
+  <EmptyState
+    title="No projects yet"
+    message="Create your first project to get started."
+  />
+): (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    {projects.map((project) => (
 
       
   <div

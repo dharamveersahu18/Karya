@@ -4,35 +4,35 @@ import {
   markNotificationAsRead,
   deleteNotification,
 } from "../services/notificationApi";
-
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
+import EmptyState from "../components/EmptyState";
 function Notifications() {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+const [notifications, setNotifications] = useState([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
 
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await getNotifications();
+
+      console.log("Notifications response:", response);
+
+      setNotifications(response.data || []);
+    } catch (error) {
+      console.error("Notifications error:", error);
+
+      setError(error.response?.data?.message || "Failed to load notifications");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await getNotifications();
-
-        console.log("Notifications response:", response);
-
-        setNotifications(response.data || []);
-      } catch (error) {
-        console.error("Notifications error:", error);
-
-        setError(
-          error.response?.data?.message ||
-            "Failed to load notifications"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNotifications();
   }, []);
-
   const handleMarkAsRead = async (notificationId) => {
     try {
       await markNotificationAsRead(notificationId);
@@ -41,11 +41,15 @@ function Notifications() {
         prev.map((notification) =>
           notification._id === notificationId
             ? { ...notification, isRead: true }
-            : notification
-        )
+            : notification,
+        ),
       );
     } catch (error) {
       console.error("Mark notification error:", error);
+          setError(
+      error.response?.data?.message ||
+        "Failed to mark notification as read"
+    );
     }
   };
 
@@ -54,51 +58,48 @@ function Notifications() {
       await deleteNotification(notificationId);
 
       setNotifications((prev) =>
-        prev.filter(
-          (notification) =>
-            notification._id !== notificationId
-        )
+        prev.filter((notification) => notification._id !== notificationId),
       );
     } catch (error) {
       console.error("Delete notification error:", error);
+        setError(
+      error.response?.data?.message ||
+        "Failed to delete notification"
+    );
     }
   };
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        Loading notifications...
-      </div>
-    );
-  }
+if (loading) {
+  return <LoadingSpinner text="Loading notifications..." />;
+}
 
-  if (error) {
-    return (
-      <div className="p-6 text-red-400">
-        {error}
-      </div>
-    );
-  }
+if (error) {
+  return (
+    <ErrorMessage
+      message={error}
+      onRetry={fetchNotifications}
+    />
+  );
+}
 
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">
-          Notifications
-        </h1>
+        <h1 className="text-2xl font-bold">Notifications</h1>
 
         <p className="mt-1 text-sm text-slate-400">
           Stay updated with your TaskForge activity.
         </p>
       </div>
 
-      {notifications.length === 0 ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 text-center text-slate-400">
-          No notifications yet.
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {notifications.map((notification) => (
+    {notifications.length === 0 ? (
+  <EmptyState
+    title="No notifications"
+    message="You're all caught up. New notifications will appear here."
+  />
+) : (
+  <div className="space-y-3">
+    {notifications.map((notification) => (
             <div
               key={notification._id}
               className={`rounded-xl border p-5 ${
@@ -109,9 +110,7 @@ function Notifications() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="font-semibold">
-                    {notification.type}
-                  </h2>
+                  <h2 className="font-semibold">{notification.type}</h2>
 
                   <p className="mt-2 text-sm text-slate-400">
                     {notification.message}
@@ -128,9 +127,7 @@ function Notifications() {
               <div className="mt-4 flex gap-3">
                 {!notification.isRead && (
                   <button
-                    onClick={() =>
-                      handleMarkAsRead(notification._id)
-                    }
+                    onClick={() => handleMarkAsRead(notification._id)}
                     className="rounded-lg border border-lime-500/30 px-3 py-2 text-sm text-lime-400 hover:bg-lime-500/10"
                   >
                     Mark as read
@@ -138,9 +135,7 @@ function Notifications() {
                 )}
 
                 <button
-                  onClick={() =>
-                    handleDelete(notification._id)
-                  }
+                  onClick={() => handleDelete(notification._id)}
                   className="rounded-lg border border-red-500/30 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
                 >
                   Delete

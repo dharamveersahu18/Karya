@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getProjectTasks,deleteTask } from "../services/taskApi";
-
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
+import EmptyState from "../components/EmptyState";
 function Tasks() {
   const { projectId } = useParams();
  const navigate = useNavigate();
@@ -10,49 +12,41 @@ function Tasks() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await getProjectTasks(projectId);
+const fetchTasks = async () => {
+  try {
+    setLoading(true);
+    setError("");
 
-        console.log("Tasks response:", response);
+    const response = await getProjectTasks(projectId);
 
-        setTasks(response.data || []);
-      } catch (error) {
-        console.error("Tasks error:", error);
+    console.log("Tasks response:", response);
 
-        setError(
-          error.response?.data?.message ||
-            "Failed to load tasks"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+    setTasks(response.data || []);
+  } catch (error) {
+    console.error("Tasks error:", error);
 
-    if (projectId) {
-      fetchTasks();
-    }
-  }, [projectId]);
-
-  if (loading) {
-    return <div className="p-6">Loading tasks...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 text-red-500">
-        {error}
-      </div>
+    setError(
+      error.response?.data?.message ||
+        "Failed to load tasks"
     );
+  } finally {
+    setLoading(false);
   }
-const handleDelete = async (taskId) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this task?"
+};
+
+if (loading) {
+  return <LoadingSpinner text="Loading tasks..." />;
+}
+
+if (error) {
+  return (
+    <ErrorMessage
+      message={error}
+      onRetry={fetchTasks}
+    />
   );
-
-  if (!confirmDelete) return;
-
+}
+const handleDelete = async (taskId) => {
   try {
     await deleteTask(taskId);
 
@@ -84,10 +78,13 @@ const handleDelete = async (taskId) => {
 </div>
 
       {tasks.length === 0 ? (
-        <p>No tasks found for this project.</p>
-      ) : (
-     <div className="space-y-4">
-  {tasks.map((task) => (
+  <EmptyState
+    title="No tasks yet"
+    message="Create a task for this project to get started."
+  />
+) : (
+  <div className="space-y-4">
+    {tasks.map((task) => (
     <div
       key={task._id}
       className="rounded-lg border border-slate-800 bg-slate-900 p-4"

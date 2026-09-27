@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
 import { getDashboard } from "../services/dashboardApi";
 import {
   Activity as ActivityIcon,
@@ -13,13 +15,12 @@ import {
   UserPlus,
   Trash2,
 } from "lucide-react";
-
 function Dashboard() {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+
     const fetchDashboard = async () => {
       try {
         const response = await getDashboard();
@@ -38,7 +39,7 @@ function Dashboard() {
         setLoading(false);
       }
     };
-
+  useEffect(() => {
     fetchDashboard();
   }, []);
 
@@ -70,20 +71,21 @@ function Dashboard() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="text-slate-400">
-        Loading dashboard...
-      </div>
-    );
-  }
+if (loading) {
+  return <LoadingSpinner text="Loading dashboard..." />;
+}
 
-  if (error) {
-    return (
-      <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400">
-        {error}
-      </div>
-    );
+if (error) {
+  return (
+    <ErrorMessage
+      message={error}
+      onRetry={fetchDashboard}
+    />
+  );
+}
+
+    if (!dashboard) {
+    return null;
   }
 
   return (

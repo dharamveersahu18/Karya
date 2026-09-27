@@ -295,16 +295,27 @@ const uploadAvatar = asyncHandler(async (req, res) => {
 
   //delete temp file after successful upload
   fs.unlinkSync(req.file.path);
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      {
-        url: result.secure_url,
-        public_id: result.public_id,
+
+  // Update user's avatar
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        avatar: result.secure_url,
       },
-      "Avatar uploaded successfully",
-    ),
-  );
+    },
+    {
+     returnDocument: "after",
+    },
+  ).select("-password -refreshToken");
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Avatar uploaded successfully"));
 });
 
 export {

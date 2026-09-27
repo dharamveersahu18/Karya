@@ -11,6 +11,7 @@ import EditTask from "../pages/EditTask";
 import Notifications from "../pages/Notifications";
 import TaskDetails from "../pages/TaskDetails";
 import Activities from "../pages/Activities";
+import Profile from "../pages/Profile";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -57,7 +58,7 @@ function AppRoutes() {
   path="/projects/:projectId/activities"
   element={<Activities />}
 />
-
+<Route path="/profile" element={<Profile />} />
           </Route>
         </Route>
 
