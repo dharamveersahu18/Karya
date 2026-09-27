@@ -262,6 +262,8 @@ function Projects() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
      {projects.map((project) => (
+
+      
   <div
     key={project._id}
     className="rounded-xl border border-slate-800 bg-slate-900 p-5"
@@ -281,7 +283,14 @@ function Projects() {
       >
         View Tasks
       </Link>
+      <Link
+  to={`/projects/${project._id}/activities`}
+  className="inline-block rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800"
+>
+  Activity
+</Link>
     </div>
+      
 
 
 

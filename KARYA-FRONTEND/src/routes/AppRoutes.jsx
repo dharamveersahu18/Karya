@@ -10,6 +10,7 @@ import ProtectedRoute from "./ProctectedRoute";
 import EditTask from "../pages/EditTask";
 import Notifications from "../pages/Notifications";
 import TaskDetails from "../pages/TaskDetails";
+import Activities from "../pages/Activities";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -52,6 +53,11 @@ function AppRoutes() {
   path="/projects/:projectId/tasks/:taskId"
   element={<TaskDetails />}
 />
+<Route
+  path="/projects/:projectId/activities"
+  element={<Activities />}
+/>
+
           </Route>
         </Route>
 

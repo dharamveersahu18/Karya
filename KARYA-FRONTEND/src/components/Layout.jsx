@@ -78,6 +78,8 @@ function MainLayout() {
             <User size={20} />
             Profile
           </Link>
+
+
         </nav>
       </aside>
 
