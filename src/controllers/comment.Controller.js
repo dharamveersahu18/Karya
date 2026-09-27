@@ -5,7 +5,7 @@ import { ApiResponse } from "../utitles/ApiResponse.js";
 import { asyncHandler } from "../utitles/asynhandler.js";
 import { createActivity } from "../utitles/createActivity.js";
 import { createNotification } from "../utitles/createNotification.js";
-
+import { Project } from "../models/project.models.js";
 const createComment = asyncHandler(async (req, res) => {
   const { content, taskId } = req.body;
 

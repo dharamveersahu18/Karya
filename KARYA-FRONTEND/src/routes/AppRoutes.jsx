@@ -1,36 +1,60 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "../pages/Login";
+import Dashboard from "../pages/Dashboard";
+import Projects from "../pages/Projects";
+import Tasks from "../pages/Tasks";
+import CreateTask from "../pages/createTask";
 import MainLayout from "../components/Layout";
 import ProtectedRoute from "./ProctectedRoute";
-import Dashboard from "../pages/Dashboard";
+import EditTask from "../pages/EditTask";
+import Notifications from "../pages/Notifications";
+import TaskDetails from "../pages/TaskDetails";
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
 
-        <Route path="/register" element={<h1>Register Page</h1>} />
-
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          {/* Main Application Layout */}
           <Route element={<MainLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-
-            <Route path="/projects" element={<h1>Projects Page</h1>} />
-
-            <Route path="/tasks" element={<h1>Tasks Page</h1>} />
 
             <Route
-              path="/notifications"
-              element={<h1>Notifications Page</h1>}
+              path="/dashboard"
+              element={<Dashboard />}
             />
 
-            <Route path="/profile" element={<h1>Profile Page</h1>} />
+            <Route
+              path="/projects"
+              element={<Projects />}
+            />
+
+    <Route
+  path="/projects/:projectId/tasks"
+  element={<Tasks />}
+/>
+<Route
+  path="/projects/:projectId/tasks/create"
+  element={<CreateTask />}
+/>
+<Route
+  path="/projects/:projectId/tasks/:taskId/edit"
+  element={<EditTask />}
+/>
+<Route
+  path="/notifications"
+  element={<Notifications />}
+/>
+<Route
+  path="/projects/:projectId/tasks/:taskId"
+  element={<TaskDetails />}
+/>
           </Route>
         </Route>
+
       </Routes>
     </BrowserRouter>
   );

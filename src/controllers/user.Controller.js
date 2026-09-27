@@ -149,6 +149,26 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+  try {
+    const users = await User.find()
+      .select("-password -refreshToken")
+      .sort({ username: 1 });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, users, "Users fetched successfully"));
+  } catch (error) {
+    console.error("Get all users error:", error);
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Something went wrong while fetching users",
+      errors: error.errors || [],
+    });
+  }
+});
+
 const getCurrentUser = asyncHandler(async (req, res) => {
   try {
     return res
@@ -182,7 +202,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const cookieOptions = {
     httpOnly: true,
-    secure: process.allowedNodeEnvironmentFlags.NODE_ENV === "PRODUCTION",
+    secure: process.env.NODE_ENV === "production",
     sameSite: "Lax",
   };
   return res
@@ -286,6 +306,7 @@ const uploadAvatar = asyncHandler(async (req, res) => {
     ),
   );
 });
+
 export {
   registerUser,
   loginUser,
@@ -293,4 +314,5 @@ export {
   logoutUser,
   refreshAccessToken,
   uploadAvatar,
+  getAllUsers,
 };
