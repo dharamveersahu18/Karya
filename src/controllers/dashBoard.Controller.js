@@ -3,6 +3,7 @@ import { Task } from "../models/task.models.js";
 import { Notification } from "../models/notification.models.js";
 import { asyncHandler } from "../utitles/asynhandler.js";
 import { ApiResponse } from "../utitles/ApiResponse.js";
+import { Activity } from "../models/activity.models.js";
 //  dashbpard 
 const getDashboard = asyncHandler(async (req, res) => {
 
@@ -56,26 +57,35 @@ const getDashboard = asyncHandler(async (req, res) => {
     const recentNotifications = await Notification.find({
         user: userId
     })
+    
         .sort({ createdAt: -1 })
         .limit(5);
-
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            {
-                statistics: {
-                    totalProjects,
-                    totalTasks,
-                    completedTasks,
-                    pendingTasks
-                },
-                recentProjects,
-                myTasks,
-                recentNotifications
+        // Recent activities
+const recentActivities = await Activity.find({
+    user: userId
+})
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .populate("task", "title status priority")
+    .populate("comment", "content");
+return res.status(200).json(
+    new ApiResponse(
+        200,
+        {
+            statistics: {
+                totalProjects,
+                totalTasks,
+                completedTasks,
+                pendingTasks
             },
-            "Dashboard data fetched successfully"
-        )
-    );
+            recentProjects,
+            myTasks,
+            recentNotifications,
+            recentActivities
+        },
+        "Dashboard data fetched successfully"
+    )
+);
 });
 
 export { getDashboard };
