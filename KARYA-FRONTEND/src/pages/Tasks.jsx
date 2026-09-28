@@ -33,7 +33,9 @@ const fetchTasks = async () => {
     setLoading(false);
   }
 };
-
+useEffect(() => {
+  fetchTasks();
+}, [projectId]);
 if (loading) {
   return <LoadingSpinner text="Loading tasks..." />;
 }
