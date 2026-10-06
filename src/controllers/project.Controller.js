@@ -12,86 +12,64 @@ import { createActivity } from "../utitles/createActivity.js";
 // ======================================================
 
 const createProject = asyncHandler(async (req, res) => {
-  const { name, description, startDate, endDate, members=[], } = req.body;
+const {
+name,
+description,
+startDate,
+endDate,
+members = [],
+} = req.body;
 
-  // Check required fields
-  if (!name || !description) {
-    throw new ApiError(400, "Name and description are required");
-  }
+// Check required fields
+if (!name || !description) {
+throw new ApiError(
+400,
+"Name and description are required"
+);
+}
 
-  // Create project
- const createProject = asyncHandler(async (req, res) => {
-  const {
-    name,
-    description,
-    startDate,
-    endDate,
-    members = [],
-  } = req.body;
-
-  // Check required fields
-  if (!name || !description) {
-    throw new ApiError(
-      400,
-      "Name and description are required"
-    );
-  }
-
-  // Create project
-  const project = await Project.create({
-    name,
-    description,
-    owner: req.user._id,
-    members,
-    status: "PLANNING",
-    startDate,
-    endDate,
-  });
-
-  // Create project activity
-  await createActivity({
-    user: req.user._id,
-    project: project._id,
-    type: "PROJECT_CREATED",
-    message: `Project "${project.name}" was created`,
-  });
-
-  // Create notification for every project member
-  for (const memberId of members) {
-    await createNotification({
-      recipient: memberId,
-      sender: req.user._id,
-      type: "PROJECT_ADDED",
-      message: `You were added to project "${project.name}"`,
-      project: project._id,
-    });
-  }
-
-  // Return response
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(
-        201,
-        project,
-        "Project created successfully"
-      )
-    );
+// Create project
+const project = await Project.create({
+name,
+description,
+owner: req.user._id,
+members,
+status: "PLANNING",
+startDate,
+endDate,
 });
 
-  // Create activity
-  await createActivity({
-    user: req.user._id,
-    project: project._id,
-    type: "PROJECT_CREATED",
-    message: `Project "${project.name}" was created`,
-  });
-
-  // Return response
-  return res
-    .status(201)
-    .json(new ApiResponse(201, project, "Project created successfully"));
+// Create project activity
+await createActivity({
+user: req.user._id,
+project: project._id,
+type: "PROJECT_CREATED",
+message: `Project "${project.name}" was created`,
 });
+
+// Create notification for every project member
+for (const memberId of members) {
+await createNotification({
+recipient: memberId,
+sender: req.user._id,
+type: "PROJECT_ADDED",
+message: `You were added to project "${project.name}"`,
+project: project._id,
+});
+}
+
+// Return response
+return res
+.status(201)
+.json(
+new ApiResponse(
+201,
+project,
+"Project created successfully"
+)
+);
+});
+
 
 // ======================================================
 // GET ALL PROJECTS

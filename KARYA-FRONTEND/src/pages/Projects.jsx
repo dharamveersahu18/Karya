@@ -237,38 +237,78 @@ if (error) {
               />
             </div>
 {/* Members */}
-<div>
-  <label className="mb-2 block">
+<div className="rounded-lg p-4 text-cyan-50">
+  <label className="mb-3 block font-semibold">
     Project Members
   </label>
 
-  <select
-    multiple
-    value={formData.members}
-    onChange={(event) => {
-      const selected = Array.from(
-        event.target.selectedOptions,
-        (option) => option.value
-      );
+  <div className="max-h-52 space-y-2 overflow-y-auto rounded-lg  p-2">
+    {users.length > 0 ? (
+      users.map((user) => {
+        const isSelected = formData.members.includes(user._id);
 
-      setFormData((prev) => ({
-        ...prev,
-        members: selected,
-      }));
-    }}
-    className="w-full rounded-lg border p-3"
-  >
-    {users.map((user) => (
-      <option key={user._id} value={user._id}>
-        {user.name}
-      </option>
-    ))}
-  </select>
+    return (
+      <label
+        key={user._id}
+        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
+          isSelected
+            ? "border-cyan-300 bg-cyan-900/50"
+            : "border-stone-400 bg-stone-500 hover:bg-stone-400"
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={(event) => {
+            setFormData((prev) => ({
+              ...prev,
+              members: event.target.checked
+                ? [...prev.members, user._id]
+                : prev.members.filter(
+                    (id) => id !== user._id
+                  ),
+            }));
+          }}
+          className="h-4 w-4"
+        />
 
-  <p className="mt-2 text-sm text-gray-500">
-    Hold Ctrl (Windows) or Command (Mac) to select multiple members.
+        <div className="flex-1">
+          <p className="font-medium">
+            {user.name ||
+              user.fullName ||
+              user.username ||
+              user.email}
+          </p>
+
+          {user.email && (
+            <p className="text-sm text-cyan-100">
+              {user.email}
+            </p>
+          )}
+        </div>
+      </label>
+    );
+  })
+) : (
+  <p className="p-3 text-sm text-cyan-100">
+    No users available
   </p>
+)}
+
+
+  </div>
+
+  <p className="mt-2 text-sm text-cyan-100">
+    Select the users you want to add to this project.
+  </p>
+
+{formData.members.length > 0 && ( <p className="mt-2 text-sm font-medium text-cyan-200">
+{formData.members.length} member
+{formData.members.length !== 1 ? "s" : ""} selected </p>
+)}
+
 </div>
+
             {/* Start Date */}
             <div>
               <label className="mb-2 block">Start Date</label>
