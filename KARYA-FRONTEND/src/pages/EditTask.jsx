@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getTaskById, updateTask } from "../services/taskApi";
-import { getAllUsers } from "../services/userApi";
+import { getProjectMembers } from "../services/projectApi";
 function EditTask() {
   const { projectId, taskId } = useParams();
   const navigate = useNavigate();
@@ -27,6 +27,8 @@ function EditTask() {
         const response = await getTaskById(taskId);
 
         const task = response.data;
+        console.log("Task received:", task);
+console.log("Assigned To received:", task.assignedTo);
         setFormData({
           title: task.title || "",
           description: task.description || "",
@@ -48,22 +50,24 @@ function EditTask() {
   }, [taskId]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getAllUsers();
+  const fetchUsers = async () => {
+    try {
+      const response = await getProjectMembers(projectId);
 
-        console.log("Users response:", response);
+      console.log("Project members response:", response);
 
-        setUsers(response.data || []);
-      } catch (error) {
-        console.error("Get users error:", error);
-      } finally {
-        setUsersLoading(false);
-      }
-    };
+      setUsers(response.data || []);
+    } catch (error) {
+      console.error("Get project members error:", error);
+    } finally {
+      setUsersLoading(false);
+    }
+  };
 
+  if (projectId) {
     fetchUsers();
-  }, []);
+  }
+}, [projectId]);
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -73,27 +77,40 @@ function EditTask() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      setSaving(true);
-      setError("");
-
-      await updateTask(taskId, {
-        ...formData,
-        projectId,
-      });
-
-      navigate(`/projects/${projectId}/tasks`);
-    } catch (error) {
-      console.error("Update task error:", error);
-
-      setError(error.response?.data?.message || "Failed to update task");
-    } finally {
-      setSaving(false);
+    if (!formData.assignedTo) {
+        setError("Please select a user to assign the task.");
+        return;
     }
-  };
+
+    try {
+        setSaving(true);
+        setError("");
+
+        console.log("Updating task with:", {
+            ...formData,
+            projectId,
+        });
+
+        await updateTask(taskId, {
+            ...formData,
+            projectId,
+        });
+
+        navigate(`/projects/${projectId}/tasks`);
+    } catch (error) {
+        console.error("Update task error:", error);
+
+        setError(
+            error.response?.data?.message ||
+            "Failed to update task"
+        );
+    } finally {
+        setSaving(false);
+    }
+};
 
   if (loading) {
     return <div className="p-6">Loading task...</div>;
@@ -142,7 +159,7 @@ function EditTask() {
             className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none focus:border-lime-400"
           />
         </div>
-        //Assign
+    
         <div>
           <label className="mb-2 block text-sm text-slate-300">Assign To</label>
 
@@ -176,7 +193,7 @@ function EditTask() {
           >
             <option value="TODO">TODO</option>
             <option value="IN_PROGRESS">IN PROGRESS</option>
-            <option value="DONE">DONE</option>
+            <option value="COMPLETED">COMPLETED</option>
           </select>
         </div>
         {/* Priority */}

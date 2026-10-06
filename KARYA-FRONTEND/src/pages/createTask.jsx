@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createTask } from "../services/taskApi";
-import { getAllUsers } from "../services/userApi";
+import { getProjectMembers } from "../services/projectApi";
+
 function CreateTask() {
   const { projectId } = useParams();
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const [formData, setFormData] = useState({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+const [assignedTo, setAssignedTo] = useState("");
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -57,23 +58,28 @@ const [formData, setFormData] = useState({
       setLoading(false);
     }
   };
+  // membes
 useEffect(() => {
   const fetchUsers = async () => {
     try {
-      const response = await getAllUsers();
+      const response = await getProjectMembers(projectId);
 
-      console.log("Users response:", response);
+      console.log("Project members response:", response);
 
       setUsers(response.data || []);
     } catch (error) {
-      console.error("Get users error:", error);
+      console.error("Get project members error:", error);
     } finally {
       setUsersLoading(false);
     }
   };
 
-  fetchUsers();
-}, []);
+  if (projectId) {
+    fetchUsers();
+  }
+}, [projectId]);
+
+
   return (
     <div className="mx-auto max-w-2xl">
       <h1 className="mb-6 text-2xl font-bold">
@@ -122,16 +128,16 @@ useEffect(() => {
             className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none focus:border-lime-400"
           />
         </div>
-// Assign to
+
 <div>
   <label className="mb-2 block text-sm text-slate-300">
     Assign To
   </label>
 
-  <select
-    name="assignedTo"
-    value={formData.assignedTo}
-    onChange={handleChange}
+ <select
+  name="assignedTo"
+  value={formData.assignedTo}
+  onChange={handleChange}
     disabled={usersLoading}
     className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none focus:border-lime-400"
   >
@@ -163,7 +169,7 @@ useEffect(() => {
           >
             <option value="TODO">TODO</option>
             <option value="IN_PROGRESS">IN PROGRESS</option>
-            <option value="DONE">DONE</option>
+            <option value="COMPLETED">COMPLETED</option>
           </select>
         </div>
 

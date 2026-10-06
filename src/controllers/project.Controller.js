@@ -6,12 +6,13 @@ import { User } from "../models/user.models.js";
 import { createNotification } from "../utitles/createNotification.js";
 import { createActivity } from "../utitles/createActivity.js";
 
+
 // ======================================================
 // CREATE PROJECT
 // ======================================================
 
 const createProject = asyncHandler(async (req, res) => {
-  const { name, description, startDate, endDate } = req.body;
+  const { name, description, startDate, endDate, members=[], } = req.body;
 
   // Check required fields
   if (!name || !description) {
@@ -19,15 +20,64 @@ const createProject = asyncHandler(async (req, res) => {
   }
 
   // Create project
+ const createProject = asyncHandler(async (req, res) => {
+  const {
+    name,
+    description,
+    startDate,
+    endDate,
+    members = [],
+  } = req.body;
+
+  // Check required fields
+  if (!name || !description) {
+    throw new ApiError(
+      400,
+      "Name and description are required"
+    );
+  }
+
+  // Create project
   const project = await Project.create({
     name,
     description,
     owner: req.user._id,
-    members: [],
+    members,
     status: "PLANNING",
     startDate,
     endDate,
   });
+
+  // Create project activity
+  await createActivity({
+    user: req.user._id,
+    project: project._id,
+    type: "PROJECT_CREATED",
+    message: `Project "${project.name}" was created`,
+  });
+
+  // Create notification for every project member
+  for (const memberId of members) {
+    await createNotification({
+      recipient: memberId,
+      sender: req.user._id,
+      type: "PROJECT_ADDED",
+      message: `You were added to project "${project.name}"`,
+      project: project._id,
+    });
+  }
+
+  // Return response
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        project,
+        "Project created successfully"
+      )
+    );
+});
 
   // Create activity
   await createActivity({
@@ -279,6 +329,53 @@ const addMember = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedProject, "Member added successfully"));
 });
 
+// get project members
+const getProjectMembers = asyncHandler(async (req, res) => {
+  const { projectId } = req.params;
+
+  if (!projectId) {
+    throw new ApiError(400, "Project ID is required");
+  }
+
+  const project = await Project.findById(projectId)
+    .populate("owner", "username fullName email")
+    .populate("members", "username fullName email");
+
+  if (!project) {
+    throw new ApiError(404, "Project not found");
+  }
+
+  const userId = req.user._id.toString();
+
+  const isOwner = project.owner._id.toString() === userId;
+
+  const isMember = project.members.some(
+    (member) => member._id.toString() === userId
+  );
+
+  if (!isOwner && !isMember) {
+    throw new ApiError(
+      403,
+      "You are not authorized to view project members"
+    );
+  }
+
+  const members = [
+    project.owner,
+    ...project.members.filter(
+      (member) =>
+        member._id.toString() !== project.owner._id.toString()
+    ),
+  ];
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      members,
+      "Project members fetched successfully"
+    )
+  );
+});
 // ======================================================
 // REMOVE MEMBER
 // ======================================================
@@ -348,4 +445,5 @@ export {
   deleteProject,
   addMember,
   removeMember,
+  getProjectMembers
 };

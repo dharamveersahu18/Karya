@@ -9,6 +9,7 @@ import {
   deleteProject,
 } from "../services/projectApi";
 import { Link } from "react-router-dom";
+import { getAllUsers } from "../services/userApi";
 function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,12 +17,15 @@ function Projects() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
+  const [users, setUsers] = useState([]);
+
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     startDate: "",
     endDate: "",
+     members: [],
   });
   // Fetch projects
   const fetchProjects = async () => {
@@ -41,9 +45,25 @@ function Projects() {
       setLoading(false);
     }
   };
+// fetch user
+const fetchUsers = async () => {
+  try {
+    const response = await getAllUsers();
 
+    console.log("Users response:", response);
+
+    setUsers(response.data || []);
+  } catch (error) {
+    console.error("Users error:", error);
+    setError(
+      error.response?.data?.message || "Failed to load users"
+    );
+  }
+};
+  //
   useEffect(() => {
     fetchProjects();
+    fetchUsers();
   }, []);
 
   // Handle input
@@ -84,12 +104,13 @@ function Projects() {
       }
 
       // Reset
-      setFormData({
-        name: "",
-        description: "",
-        startDate: "",
-        endDate: "",
-      });
+     setFormData({
+  name: "",
+  description: "",
+  startDate: "",
+  endDate: "",
+  members: [],
+});
 
       setEditingProject(null);
       setShowForm(false);
@@ -108,6 +129,9 @@ function Projects() {
       description: project.description || "",
       startDate: project.startDate ? project.startDate.slice(0, 10) : "",
       endDate: project.endDate ? project.endDate.slice(0, 10) : "",
+     members: project.members?.map((member) =>
+      typeof member === "object" ? member._id : member
+    ) || [],
     });
 
     setShowForm(true);
@@ -212,7 +236,39 @@ if (error) {
                 className="w-full rounded-lg border p-3"
               />
             </div>
+{/* Members */}
+<div>
+  <label className="mb-2 block">
+    Project Members
+  </label>
 
+  <select
+    multiple
+    value={formData.members}
+    onChange={(event) => {
+      const selected = Array.from(
+        event.target.selectedOptions,
+        (option) => option.value
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        members: selected,
+      }));
+    }}
+    className="w-full rounded-lg border p-3"
+  >
+    {users.map((user) => (
+      <option key={user._id} value={user._id}>
+        {user.name}
+      </option>
+    ))}
+  </select>
+
+  <p className="mt-2 text-sm text-gray-500">
+    Hold Ctrl (Windows) or Command (Mac) to select multiple members.
+  </p>
+</div>
             {/* Start Date */}
             <div>
               <label className="mb-2 block">Start Date</label>
@@ -242,7 +298,7 @@ if (error) {
             {/* Buttons */}
             <div className="flex gap-3">
         <button
-                type="sumbit"
+                type="submit"
                 
                 className="rounded-lg border px-5 py-3"
               >

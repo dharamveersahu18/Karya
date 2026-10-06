@@ -231,10 +231,9 @@ const updateTask = asyncHandler(async (req, res) => {
   if (priority !== undefined) {
     task.priority = priority;
   }
-
-  if (dueDate !== undefined) {
-    task.dueDate = dueDate;
-  }
+if (dueDate !== undefined) {
+  task.dueDate = dueDate ? dueDate : null;
+}
 
   // save updated task
   const updatedTask = await task.save();

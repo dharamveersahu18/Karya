@@ -122,16 +122,17 @@ const loginUser = asyncHandler(async (req, res) => {
     ); // Fixed typo & string formatting
 
     // 8. Cookie options
-    const cookieOptions = {
-      httpOnly: true, // Fixed "httpsOnly" typo to "httpOnly"
-      secure: process.env.NODE_ENV === "production",
-    };
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+};
 
     // 9. Send response
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, cookieOptions)
-      .cookie("refreshToken", refreshToken, cookieOptions)
+res
+  .status(200)
+  .cookie("accessToken", accessToken, cookieOptions)
+  .cookie("refreshToken", refreshToken, cookieOptions)
       .json(
         new ApiResponse(
           200,
