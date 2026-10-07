@@ -11,7 +11,7 @@ import MainLayout from "../components/Layout";
 import ProtectedRoute from "./ProctectedRoute";
 import EditTask from "../pages/EditTask";
 import Notifications from "../pages/Notifications";
-import TaskDetails from "../pages/TaskDetails";
+import TaskDetails from "../pages/Comment";
 import Activities from "../pages/Activities";
 import Profile from "../pages/Profile";
 function AppRoutes() {

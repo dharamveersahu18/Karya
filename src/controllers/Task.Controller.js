@@ -8,7 +8,7 @@ import { createNotification } from "../utitles/createNotification.js";
 import { createActivity } from "../utitles/createActivity.js";
 //create Task
 const createTask = asyncHandler(async (req, res) => {
-  const { title, description, projectId, assignedTo, priority, dueDate } =
+  const { title, description, projectId, assignedTo, status, priority, dueDate } =
     req.body;
 
   // check required fields
@@ -40,6 +40,14 @@ const createTask = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Assignment user not found");
     }
   }
+  const normalizedStatus = status
+    ? String(status).trim().toLowerCase().replace("in_progress", "pending")
+    : "todo";
+
+  const normalizedPriority = priority
+    ? String(priority).trim().toLowerCase()
+    : "medium";
+
   //create task
   const task = await Task.create({
     title,
@@ -47,7 +55,12 @@ const createTask = asyncHandler(async (req, res) => {
     project: projectId,
     createdBy: req.user._id,
     assignedTo,
-priority,
+    status: ["todo", "pending", "completed"].includes(normalizedStatus)
+      ? normalizedStatus
+      : "todo",
+    priority: ["low", "medium", "high"].includes(normalizedPriority)
+      ? normalizedPriority
+      : "medium",
     dueDate,
   });
 
@@ -223,17 +236,28 @@ const updateTask = asyncHandler(async (req, res) => {
   if (title !== undefined) task.title = title;
   if (description !== undefined) task.description = description;
 
+  const normalizedStatus = status
+    ? String(status).trim().toLowerCase().replace("in_progress", "pending")
+    : null;
+
+  const normalizedPriority = priority
+    ? String(priority).trim().toLowerCase()
+    : null;
+
   // Store whether task is being completed
-  const isTaskCompleted = status === "COMPLETED" && task.status !== "COMPLETED";
+  const isTaskCompleted =
+    normalizedStatus === "completed" && task.status !== "completed";
 
-  if (status !== undefined) task.status = status;
-
-  if (priority !== undefined) {
-    task.priority = priority;
+  if (normalizedStatus && ["todo", "pending", "completed"].includes(normalizedStatus)) {
+    task.status = normalizedStatus;
   }
-if (dueDate !== undefined) {
-  task.dueDate = dueDate ? dueDate : null;
-}
+
+  if (normalizedPriority && ["low", "medium", "high"].includes(normalizedPriority)) {
+    task.priority = normalizedPriority;
+  }
+  if (dueDate !== undefined) {
+    task.dueDate = dueDate ? dueDate : null;
+  }
 
   // save updated task
   const updatedTask = await task.save();

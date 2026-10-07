@@ -25,13 +25,17 @@ const [editingContent, setEditingContent] = useState("");
     const fetchData = async () => {
       try {
         const [taskResponse, commentsResponse] =
-          await Promise.all([
-            getTaskById(taskId),
-            getTaskComments(taskId),
-          ]);
+  await Promise.all([
+    getTaskById(taskId),
+    getTaskComments(taskId),
+  ]);
 
-        setTask(taskResponse.data);
-        setComments(commentsResponse.data || []);
+console.log("COMMENTS FROM BACKEND:", commentsResponse.data);
+
+setTask(taskResponse.data);
+setComments(commentsResponse.data || []);
+
+        
       } catch (error) {
         console.error("Task details error:", error);
 
@@ -123,9 +127,10 @@ const [editingContent, setEditingContent] = useState("");
         comment._id === commentId
           ? response.data
           : comment
+          
       )
     );
-
+ console.log("COMMENT:", Comment);
     setEditingCommentId(null);
     setEditingContent("");
   } catch (error) {
@@ -273,11 +278,11 @@ const [editingContent, setEditingContent] = useState("");
     <div className="flex justify-between gap-4">
       <div>
         <p className="font-medium">
-          {comment.user?.fullName ||
-            comment.user?.username ||
+          {comment.author?.fullName ||
+            comment.author?.username ||
             comment.createdBy?.fullName ||
-            comment.createdBy?.username ||
-            "User"}
+            comment.createdBy?.username 
+            }
         </p>
 
         <p className="mt-2 text-slate-400">

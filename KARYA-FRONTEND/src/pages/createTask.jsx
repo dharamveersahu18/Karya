@@ -12,8 +12,8 @@ const [usersLoading, setUsersLoading] = useState(true);
 const [formData, setFormData] = useState({
   title: "",
   description: "",
-  status: "TODO",
-  priority: "MEDIUM",
+  status: "todo",
+  priority: "medium",
   dueDate: "",
   assignedTo: "",
 });
@@ -167,9 +167,9 @@ useEffect(() => {
             onChange={handleChange}
             className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none"
           >
-            <option value="TODO">TODO</option>
-            <option value="IN_PROGRESS">IN PROGRESS</option>
-            <option value="COMPLETED">COMPLETED</option>
+            <option value="todo">TODO</option>
+            <option value="pending">IN PROGRESS</option>
+            <option value="completed">COMPLETED</option>
           </select>
         </div>
 
@@ -185,9 +185,9 @@ useEffect(() => {
             onChange={handleChange}
             className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none"
           >
-            <option value="LOW">LOW</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HIGH">HIGH</option>
+            <option value="low">LOW</option>
+            <option value="medium">MEDIUM</option>
+            <option value="high">HIGH</option>
           </select>
         </div>
 

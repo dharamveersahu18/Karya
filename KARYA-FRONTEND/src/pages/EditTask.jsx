@@ -2,6 +2,24 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getTaskById, updateTask } from "../services/taskApi";
 import { getProjectMembers } from "../services/projectApi";
+
+const normalizeStatus = (status) => {
+  const value = String(status || "todo").trim().toLowerCase();
+
+  if (value === "in_progress") return "pending";
+  if (["todo", "pending", "completed"].includes(value)) return value;
+
+  return "todo";
+};
+
+const normalizePriority = (priority) => {
+  const value = String(priority || "medium").trim().toLowerCase();
+
+  if (["low", "medium", "high"].includes(value)) return value;
+
+  return "medium";
+};
+
 function EditTask() {
   const { projectId, taskId } = useParams();
   const navigate = useNavigate();
@@ -9,8 +27,8 @@ function EditTask() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    status: "TODO",
-    priority: "MEDIUM",
+    status: "todo",
+    priority: "medium",
     dueDate: "",
     assignedTo: "",
   });
@@ -32,8 +50,8 @@ console.log("Assigned To received:", task.assignedTo);
         setFormData({
           title: task.title || "",
           description: task.description || "",
-          status: task.status || "TODO",
-          priority: task.priority || "MEDIUM",
+          status: normalizeStatus(task.status),
+          priority: normalizePriority(task.priority),
           dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
           assignedTo: task.assignedTo?._id || task.assignedTo || "",
         });
@@ -77,7 +95,7 @@ console.log("Assigned To received:", task.assignedTo);
     }));
   };
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.assignedTo) {
@@ -89,15 +107,9 @@ console.log("Assigned To received:", task.assignedTo);
         setSaving(true);
         setError("");
 
-        console.log("Updating task with:", {
-            ...formData,
-            projectId,
-        });
+        console.log("Updating task with:", formData);
 
-        await updateTask(taskId, {
-            ...formData,
-            projectId,
-        });
+        await updateTask(taskId, formData);
 
         navigate(`/projects/${projectId}/tasks`);
     } catch (error) {
@@ -191,9 +203,9 @@ console.log("Assigned To received:", task.assignedTo);
             onChange={handleChange}
             className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none"
           >
-            <option value="TODO">TODO</option>
-            <option value="IN_PROGRESS">IN PROGRESS</option>
-            <option value="COMPLETED">COMPLETED</option>
+            <option value="todo">TODO</option>
+            <option value="pending">IN PROGRESS</option>
+            <option value="completed">COMPLETED</option>
           </select>
         </div>
         {/* Priority */}
@@ -206,9 +218,9 @@ console.log("Assigned To received:", task.assignedTo);
             onChange={handleChange}
             className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none"
           >
-            <option value="LOW">LOW</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HIGH">HIGH</option>
+            <option value="low">LOW</option>
+            <option value="medium">MEDIUM</option>
+            <option value="high">HIGH</option>
           </select>
         </div>
         {/* Due Date */}
