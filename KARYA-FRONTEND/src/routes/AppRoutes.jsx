@@ -14,6 +14,7 @@ import Notifications from "../pages/Notifications";
 import TaskDetails from "../pages/Comment";
 import Activities from "../pages/Activities";
 import Profile from "../pages/Profile";
+import AllTasks from "../pages/AllTasks";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -27,7 +28,6 @@ function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
-
             <Route path="/projects" element={<Projects />} />
 
             <Route path="/projects/:projectId/tasks" element={<Tasks />} />
@@ -35,6 +35,7 @@ function AppRoutes() {
               path="/projects/:projectId/tasks/create"
               element={<CreateTask />}
             />
+<Route path="/tasks" element={<AllTasks />} />
             <Route
               path="/projects/:projectId/tasks/:taskId/edit"
               element={<EditTask />}

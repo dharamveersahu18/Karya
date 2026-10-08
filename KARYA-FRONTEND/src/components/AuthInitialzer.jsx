@@ -17,6 +17,7 @@ function AuthInitializer({ children }) {
         dispatch(setUser(response.data));
       } catch (error) {
         console.log("No authenticated user");
+
         dispatch(logout());
       } finally {
         setLoading(false);
@@ -28,10 +29,60 @@ function AuthInitializer({ children }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-lime-500" />
-          <p className="text-sm text-slate-400">
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#090b0f] text-white">
+        {/* Background glow */}
+        <div
+          className="
+            pointer-events-none absolute
+            left-1/2 top-1/2
+            h-72 w-72
+            -translate-x-1/2 -translate-y-1/2
+            rounded-full
+            bg-lime-500/5
+            blur-3xl
+          "
+        />
+
+        {/* Loader */}
+        <div className="relative flex flex-col items-center">
+          {/* Logo */}
+          <div
+            className="
+              flex h-14 w-14
+              items-center justify-center
+              rounded-2xl
+              bg-lime-500
+              text-2xl font-black
+              text-black
+              shadow-xl
+              shadow-lime-500/10
+            "
+          >
+            K
+          </div>
+
+          {/* Brand */}
+          <h1 className="mt-5 text-xl font-bold tracking-tight">
+            Karya
+          </h1>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Work Management
+          </p>
+
+          {/* Spinner */}
+          <div
+            className="
+              mt-7 h-7 w-7
+              animate-spin
+              rounded-full
+              border-2
+              border-slate-800
+              border-t-lime-400
+            "
+          />
+
+          <p className="mt-4 text-xs text-slate-600">
             Checking authentication...
           </p>
         </div>

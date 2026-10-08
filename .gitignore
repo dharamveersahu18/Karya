@@ -1,3 +1,7 @@
 .env
 node_modules
 public/temp
+node_modules
+.env
+.env.*
+dist

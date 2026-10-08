@@ -8,7 +8,11 @@ export const getProjectTasks = async (projectId) => {
 
   return response.data;
 };
-
+// Get all tasks accessible to current user
+export const getAllTasks = async () => {
+  const response = await api.get("/tasks");
+  return response.data;
+}; 
 export const getTaskById = async (taskId) => {
   const response = await api.get(`/tasks/${taskId}`);
   return response.data;

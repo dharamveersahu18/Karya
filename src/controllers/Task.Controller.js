@@ -92,8 +92,40 @@ const createTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, task, "task created successfully"));
 });
 
-// get All ProjectTask
 
+// Get all tasks accessible to the logged-in user
+const getAllTasks = asyncHandler(async (req, res) => {
+  // Find projects where current user is owner OR member
+  const projects = await Project.find({
+    $or: [
+      { owner: req.user._id },
+      { members: req.user._id },
+    ],
+  }).select("_id");
+
+  // Get project IDs
+  const projectIds = projects.map((project) => project._id);
+
+  // Find all tasks from those projects
+  const tasks = await Task.find({
+    project: { $in: projectIds },
+  })
+    .populate("project", "name")
+    .populate("createdBy", "username email fullName")
+    .populate("assignedTo", "username email fullName")
+    .sort({ createdAt: -1 });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        tasks,
+        "All tasks fetched successfully"
+      )
+    );
+});
+// get tasks for a specific project
 const getProjectTasks = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
 
@@ -338,12 +370,10 @@ const deleteTask = asyncHandler(async (req, res) => {
 
 await Task.findByIdAndDelete(taskId);
 
-  // 7. Delete task
-  await Task.findByIdAndDelete(taskId);
 
   // 8. Send response
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Task deleted successfully"));
 });
-export { createTask, getProjectTasks, getTaskById, updateTask, deleteTask };
+export { createTask,  getAllTasks, getProjectTasks, getTaskById, updateTask, deleteTask };

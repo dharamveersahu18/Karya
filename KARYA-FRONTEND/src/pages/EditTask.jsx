@@ -129,22 +129,56 @@ const handleSubmit = async (e) => {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold">Edit Task</h1>
+  <div className="mx-auto max-w-2xl">
+    {/* Header */}
+    <div className="mb-8">
+      <p className="text-sm font-medium text-lime-400">
+        Task Management
+      </p>
 
-      {error && (
-        <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-red-400">
-          {error}
-        </div>
-      )}
+      <h1 className="mt-1 text-3xl font-bold tracking-tight text-white">
+        Edit Task
+      </h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6"
+      <p className="mt-2 text-sm text-slate-500">
+        Update the task details, assignment, status, and priority.
+      </p>
+    </div>
+
+    {/* Error */}
+    {error && (
+      <div
+        className="
+          mb-5 rounded-xl
+          border border-red-500/20
+          bg-red-500/10
+          px-4 py-3
+          text-sm text-red-400
+        "
       >
-        {/* Title */}
+        {error}
+      </div>
+    )}
+
+    {/* Form */}
+    <form
+      onSubmit={handleSubmit}
+      className="
+        relative overflow-hidden
+        rounded-2xl
+        border border-slate-800
+        bg-slate-900/80
+        p-6 shadow-xl shadow-black/10
+        sm:p-7
+      "
+    >
+      {/* Top glow */}
+      <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-lime-500/5 blur-3xl" />
+
+      <div className="relative space-y-6">
+        {/* Task Title */}
         <div>
-          <label className="mb-2 block text-sm text-slate-300">
+          <label className="mb-2 block text-sm font-medium text-slate-300">
             Task Title
           </label>
 
@@ -154,12 +188,26 @@ const handleSubmit = async (e) => {
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none focus:border-lime-400"
+            placeholder="Enter task title"
+            className="
+              w-full rounded-xl
+              border border-slate-800
+              bg-slate-950
+              px-4 py-3
+              text-sm text-white
+              placeholder:text-slate-600
+              outline-none
+              transition
+              focus:border-lime-400/60
+              focus:ring-2
+              focus:ring-lime-400/10
+            "
           />
         </div>
+
         {/* Description */}
         <div>
-          <label className="mb-2 block text-sm text-slate-300">
+          <label className="mb-2 block text-sm font-medium text-slate-300">
             Description
           </label>
 
@@ -167,95 +215,197 @@ const handleSubmit = async (e) => {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            rows="4"
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none focus:border-lime-400"
+            rows="5"
+            placeholder="Describe what needs to be done..."
+            className="
+              w-full resize-none rounded-xl
+              border border-slate-800
+              bg-slate-950
+              px-4 py-3
+              text-sm text-white
+              placeholder:text-slate-600
+              outline-none
+              transition
+              focus:border-lime-400/60
+              focus:ring-2
+              focus:ring-lime-400/10
+            "
           />
         </div>
-    
+
+        {/* Assignment */}
         <div>
-          <label className="mb-2 block text-sm text-slate-300">Assign To</label>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Assign To
+          </label>
 
           <select
             name="assignedTo"
             value={formData.assignedTo}
             onChange={handleChange}
             disabled={usersLoading}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none focus:border-lime-400"
+            className="
+              w-full rounded-xl
+              border border-slate-800
+              bg-slate-950
+              px-4 py-3
+              text-sm text-white
+              outline-none
+              transition
+              focus:border-lime-400/60
+              focus:ring-2
+              focus:ring-lime-400/10
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
           >
             <option value="">
               {usersLoading ? "Loading users..." : "Select a user"}
             </option>
 
             {users.map((user) => (
-              <option key={user._id} value={user._id}>
-                {user.fullName} (@{user.username})
+              <option key={user?._id} value={user?._id}>
+                {user?.fullName} (@{user?.username})
               </option>
             ))}
           </select>
         </div>
-        {/* Status */}
-        <div>
-          <label className="mb-2 block text-sm text-slate-300">Status</label>
 
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none"
-          >
-            <option value="todo">TODO</option>
-            <option value="pending">IN PROGRESS</option>
-            <option value="completed">COMPLETED</option>
-          </select>
-        </div>
-        {/* Priority */}
-        <div>
-          <label className="mb-2 block text-sm text-slate-300">Priority</label>
+        {/* Status + Priority */}
+        <div className="grid gap-5 sm:grid-cols-2">
+          {/* Status */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Status
+            </label>
 
-          <select
-            name="priority"
-            value={formData.priority}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none"
-          >
-            <option value="low">LOW</option>
-            <option value="medium">MEDIUM</option>
-            <option value="high">HIGH</option>
-          </select>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="
+                w-full rounded-xl
+                border border-slate-800
+                bg-slate-950
+                px-4 py-3
+                text-sm text-white
+                outline-none
+                transition
+                focus:border-lime-400/60
+                focus:ring-2
+                focus:ring-lime-400/10
+              "
+            >
+              <option value="todo">TODO</option>
+              <option value="pending">IN PROGRESS</option>
+              <option value="completed">COMPLETED</option>
+            </select>
+          </div>
+
+          {/* Priority */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Priority
+            </label>
+
+            <select
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              className="
+                w-full rounded-xl
+                border border-slate-800
+                bg-slate-950
+                px-4 py-3
+                text-sm text-white
+                outline-none
+                transition
+                focus:border-lime-400/60
+                focus:ring-2
+                focus:ring-lime-400/10
+              "
+            >
+              <option value="low">LOW</option>
+              <option value="medium">MEDIUM</option>
+              <option value="high">HIGH</option>
+            </select>
+          </div>
         </div>
+
         {/* Due Date */}
         <div>
-          <label className="mb-2 block text-sm text-slate-300">Due Date</label>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Due Date
+          </label>
 
           <input
             type="date"
             name="dueDate"
             value={formData.dueDate}
             onChange={handleChange}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 outline-none"
+            className="
+              w-full rounded-xl
+              border border-slate-800
+              bg-slate-950
+              px-4 py-3
+              text-sm text-white
+              outline-none
+              transition
+              focus:border-lime-400/60
+              focus:ring-2
+              focus:ring-lime-400/10
+            "
           />
         </div>
-        {/* Buttons */}
-        <div className="flex gap-3 pt-2">
-          <button
-            type="button"
-            onClick={() => navigate(`/projects/${projectId}/tasks`)}
-            className="rounded-lg border border-slate-700 px-5 py-3 text-slate-300 hover:bg-slate-800"
-          >
-            Cancel
-          </button>
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-lg bg-lime-500 px-5 py-3 font-medium text-black hover:bg-lime-400 disabled:opacity-50"
-          >
-            {saving ? "Updating..." : "Update Task"}
-          </button>
+        {/* Divider */}
+        <div className="border-t border-slate-800 pt-5">
+          {/* Buttons */}
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() =>
+                navigate(`/projects/${projectId}/tasks`)
+              }
+              className="
+                rounded-xl
+                border border-slate-700
+                px-5 py-3
+                text-sm font-medium
+                text-slate-300
+                transition
+                hover:bg-slate-800
+                hover:text-white
+              "
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              disabled={saving}
+              className="
+                rounded-xl
+                bg-lime-500
+                px-5 py-3
+                text-sm font-semibold
+                text-black
+                transition-all
+                hover:bg-lime-400
+                hover:shadow-lg
+                hover:shadow-lime-500/10
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            >
+              {saving ? "Updating..." : "Update Task"}
+            </button>
+          </div>
         </div>
-      </form>
-    </div>
-  );
+      </div>
+    </form>
+  </div>
+);
 }
 
 export default EditTask;

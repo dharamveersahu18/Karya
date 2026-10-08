@@ -358,76 +358,156 @@ if (error) {
       )}
 
       {/* Projects */}
-  {projects.length === 0 ? (
+{projects.length === 0 ? (
   <EmptyState
     title="No projects yet"
     message="Create your first project to get started."
   />
-): (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+) : (
+  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
     {projects.map((project) => (
-
-      
-  <div
-    key={project._id}
-    className="rounded-xl border border-slate-800 bg-slate-900 p-5"
-  >
-    <h2 className="text-xl font-semibold">
-      {project.name}
-    </h2>
-
-    <p className="mt-2 text-slate-400">
-      {project.description}
-    </p>
-
-    <div className="mt-4">
-      <Link
-        to={`/projects/${project._id}/tasks`}
-        className="inline-block rounded-lg bg-lime-500 px-4 py-2 text-sm font-medium text-black hover:bg-lime-400"
+      <div
+        key={project?._id}
+        className="
+          group relative overflow-hidden rounded-2xl
+          border border-slate-800
+          bg-slate-900/80
+          p-5
+          transition-all duration-300
+          hover:-translate-y-1
+          hover:border-lime-500/40
+          hover:shadow-xl hover:shadow-lime-500/5
+        "
       >
-        View Tasks
-      </Link>
-      <Link
-  to={`/projects/${project._id}/activities`}
-  className="inline-block rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800"
->
-  Activity
-</Link>
-    </div>
-      
+        {/* Top glow */}
+        <div
+          className="
+            pointer-events-none absolute -right-16 -top-16
+            h-32 w-32 rounded-full
+            bg-lime-500/10 blur-3xl
+            transition-opacity duration-300
+            group-hover:bg-lime-500/20
+          "
+        />
 
+        {/* Header */}
+        <div className="relative flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-lime-400">
+              Project
+            </p>
 
+            <h2 className="truncate text-xl font-semibold text-white">
+              {project?.name}
+            </h2>
+          </div>
 
-              {project.startDate && (
-                <p className="mt-4 text-sm">
-                  Start: {new Date(project.startDate).toLocaleDateString()}
-                </p>
-              )}
-
-              {project.endDate && (
-                <p className="text-sm">
-                  End: {new Date(project.endDate).toLocaleDateString()}
-                </p>
-              )}
-              <div className="mt-6 flex gap-3">
-                <button
-                  onClick={() => handleEdit(project)}
-                  className="rounded-lg border px-4 py-2"
-                >
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => handleDelete(project._id)}
-                  className="rounded-lg border px-4 py-2"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+          {/* Member count */}
+          <div className="shrink-0 rounded-full border border-slate-700 bg-slate-800/80 px-3 py-1 text-xs text-slate-400">
+            {project?.members?.length || 0} members
+          </div>
         </div>
-      )}
+
+        {/* Description */}
+        <p className="relative mt-4 line-clamp-2 min-h-[48px] text-sm leading-6 text-slate-400">
+          {project?.description || "No project description available."}
+        </p>
+
+        {/* Dates */}
+        <div className="relative mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+            <p className="text-[11px] uppercase tracking-wide text-slate-600">
+              Start Date
+            </p>
+
+            <p className="mt-1 text-sm font-medium text-slate-300">
+              {project?.startDate
+                ? new Date(project.startDate).toLocaleDateString()
+                : "Not set"}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+            <p className="text-[11px] uppercase tracking-wide text-slate-600">
+              End Date
+            </p>
+
+            <p className="mt-1 text-sm font-medium text-slate-300">
+              {project?.endDate
+                ? new Date(project.endDate).toLocaleDateString()
+                : "Not set"}
+            </p>
+          </div>
+        </div>
+
+        {/* Main actions */}
+        <div className="relative mt-5 flex gap-2">
+          <Link
+            to={`/projects/${project?._id}/tasks`}
+            className="
+              flex-1 rounded-xl
+              bg-lime-500 px-4 py-2.5
+              text-center text-sm font-semibold text-black
+              transition
+              hover:bg-lime-400
+            "
+          >
+            View Tasks
+          </Link>
+
+          <Link
+            to={`/projects/${project?._id}/activities`}
+            className="
+              rounded-xl border border-slate-700
+              px-4 py-2.5
+              text-sm font-medium text-slate-300
+              transition
+              hover:border-lime-500/40
+              hover:bg-slate-800
+              hover:text-white
+            "
+          >
+            Activity
+          </Link>
+        </div>
+
+        {/* Edit / Delete */}
+        <div className="relative mt-3 flex gap-2 border-t border-slate-800 pt-4">
+          <button
+            onClick={() => handleEdit(project)}
+            className="
+              flex-1 rounded-lg
+              border border-slate-800
+              px-3 py-2
+              text-sm text-slate-400
+              transition
+              hover:border-slate-600
+              hover:bg-slate-800
+              hover:text-white
+            "
+          >
+            Edit
+          </button>
+
+          <button
+            onClick={() => handleDelete(project?._id)}
+            className="
+              flex-1 rounded-lg
+              border border-red-500/10
+              px-3 py-2
+              text-sm text-red-400
+              transition
+              hover:border-red-500/30
+              hover:bg-red-500/10
+            "
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
     </div>
   );
 }

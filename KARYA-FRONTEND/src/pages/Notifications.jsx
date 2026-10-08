@@ -82,71 +82,149 @@ if (error) {
   );
 }
 
-  return (
-    <div className="mx-auto max-w-3xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Notifications</h1>
+ return (
+  <div className="mx-auto max-w-4xl">
+    {/* Header */}
+    <div className="mb-8">
+      <p className="text-sm font-medium text-lime-400">
+        Workspace
+      </p>
 
-        <p className="mt-1 text-sm text-slate-400">
-          Stay updated with your TaskForge activity.
-        </p>
-      </div>
+      <h1 className="mt-1 text-3xl font-bold tracking-tight text-white">
+        Notifications
+      </h1>
 
+      <p className="mt-2 text-sm text-slate-500">
+        Stay updated with your Karya activity.
+      </p>
+    </div>
+
+    {/* Notifications */}
     {notifications.length === 0 ? (
-  <EmptyState
-    title="No notifications"
-    message="You're all caught up. New notifications will appear here."
-  />
-) : (
-  <div className="space-y-3">
-    {notifications.map((notification) => (
-            <div
-              key={notification._id}
-              className={`rounded-xl border p-5 ${
-                notification.isRead
-                  ? "border-slate-800 bg-slate-900"
-                  : "border-lime-500/30 bg-lime-500/5"
-              }`}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="font-semibold">{notification.type}</h2>
+      <EmptyState
+        title="No notifications"
+        message="You're all caught up. New notifications will appear here."
+      />
+    ) : (
+      <div className="space-y-3">
+        {notifications.map((notification) => {
+          const isUnread = !notification?.isRead;
 
-                  <p className="mt-2 text-sm text-slate-400">
-                    {notification.message}
-                  </p>
+          return (
+            <div
+              key={notification?._id}
+              className={`
+                group relative overflow-hidden rounded-2xl
+                border p-5
+                transition-all duration-300
+                hover:-translate-y-0.5
+                ${
+                  isUnread
+                    ? "border-lime-500/30 bg-lime-500/[0.04] hover:border-lime-500/50"
+                    : "border-slate-800 bg-slate-900/80 hover:border-slate-700"
+                }
+              `}
+            >
+              {/* Unread glow */}
+              {isUnread && (
+                <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-lime-500/10 blur-3xl" />
+              )}
+
+              <div className="relative flex gap-4">
+                {/* Notification Icon */}
+                <div
+                  className={`
+                    flex h-11 w-11 shrink-0 items-center justify-center
+                    rounded-xl border
+                    ${
+                      isUnread
+                        ? "border-lime-500/20 bg-lime-500/10 text-lime-400"
+                        : "border-slate-800 bg-slate-950 text-slate-500"
+                    }
+                  `}
+                >
+                  🔔
                 </div>
 
-                {!notification.isRead && (
-                  <span className="rounded-full bg-lime-500 px-2 py-1 text-xs font-medium text-black">
-                    New
-                  </span>
-                )}
-              </div>
+                {/* Content */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-semibold text-white">
+                          {notification?.type?.replaceAll("_", " ")}
+                        </h2>
 
-              <div className="mt-4 flex gap-3">
-                {!notification.isRead && (
-                  <button
-                    onClick={() => handleMarkAsRead(notification._id)}
-                    className="rounded-lg border border-lime-500/30 px-3 py-2 text-sm text-lime-400 hover:bg-lime-500/10"
-                  >
-                    Mark as read
-                  </button>
-                )}
+                        {isUnread && (
+                          <span className="rounded-full bg-lime-400 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black">
+                            New
+                          </span>
+                        )}
+                      </div>
 
-                <button
-                  onClick={() => handleDelete(notification._id)}
-                  className="rounded-lg border border-red-500/30 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
-                >
-                  Delete
-                </button>
+                      <p className="mt-2 text-sm leading-6 text-slate-400">
+                        {notification?.message}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Date */}
+                  {notification?.createdAt && (
+                    <p className="mt-3 text-xs text-slate-600">
+                      {new Date(
+                        notification.createdAt
+                      ).toLocaleString()}
+                    </p>
+                  )}
+
+                  {/* Actions */}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {isUnread && (
+                      <button
+                        onClick={() =>
+                          handleMarkAsRead(notification?._id)
+                        }
+                        className="
+                          rounded-lg
+                          border border-lime-500/20
+                          px-3 py-2
+                          text-xs font-medium
+                          text-lime-400
+                          transition
+                          hover:bg-lime-500/10
+                        "
+                      >
+                        Mark as read
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() =>
+                        handleDelete(notification?._id)
+                      }
+                      className="
+                        rounded-lg
+                        border border-red-500/10
+                        px-3 py-2
+                        text-xs font-medium
+                        text-red-400
+                        transition
+                        hover:border-red-500/20
+                        hover:bg-red-500/10
+                      "
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+          );
+        })}
+      </div>
+    )}
+  </div>
+);
 }
 
 export default Notifications;
