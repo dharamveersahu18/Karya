@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 const api = axios.create({
@@ -5,12 +6,10 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Attach access token to every request
+// Attach the access token to every API request.
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-
-    console.log("Token exists:", !!token);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -18,7 +17,7 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 api.interceptors.response.use(
@@ -27,10 +26,11 @@ api.interceptors.response.use(
     console.error(
       "API Error:",
       error.response?.status,
-      error.response?.data?.message || error.message,
+      error.response?.data?.message || error.message
     );
+
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;

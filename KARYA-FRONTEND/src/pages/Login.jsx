@@ -35,12 +35,13 @@ function Login() {
       console.log("Login successful:", response);
 
       // Save the access token in the browser
-      const accessToken = response?.data?.data?.accessToken;
+     const accessToken = response?.data?.accessToken;
 
-      if (accessToken) {
-        localStorage.setItem("accessToken", accessToken);
-      }
+console.log("Token received:", !!accessToken);
 
+if (accessToken) {
+  localStorage.setItem("accessToken", accessToken);
+}
       // Keep your existing Redux login logic
       dispatch(loginSuccess(response.data));
 
