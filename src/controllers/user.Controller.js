@@ -122,17 +122,18 @@ const loginUser = asyncHandler(async (req, res) => {
     ); // Fixed typo & string formatting
 
     // 8. Cookie options
-const cookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-};
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    };
 
     // 9. Send response
-res
-  .status(200)
-  .cookie("accessToken", accessToken, cookieOptions)
-  .cookie("refreshToken", refreshToken, cookieOptions)
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", refreshToken, cookieOptions)
       .json(
         new ApiResponse(
           200,
@@ -306,7 +307,7 @@ const uploadAvatar = asyncHandler(async (req, res) => {
       },
     },
     {
-     returnDocument: "after",
+      returnDocument: "after",
     },
   ).select("-password -refreshToken");
 
