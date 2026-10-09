@@ -16,15 +16,17 @@ const app = express();
 
 // ==================== MIDDLEWARE ====================
 
+
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://karya-frontend-jme5y0v34-dharam4.vercel.app",
+      "https://karya-frontend-bou0zwnew-dharam4.vercel.app",
     ],
     credentials: true,
   })
 );
+
 console.log("CORS_ORIGIN:", process.env.CORS_ORIGIN);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
