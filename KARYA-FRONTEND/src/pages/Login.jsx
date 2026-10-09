@@ -32,32 +32,28 @@ function Login() {
     try {
       const response = await loginUser(formData);
 
-      ```
-console.log("Login successful:", response);
+      console.log("Login successful:", response);
 
-// Save the access token in the browser
-const accessToken = response?.data?.data?.accessToken;
+      // Save the access token in the browser
+      const accessToken = response?.data?.data?.accessToken;
 
-if (accessToken) {
-  localStorage.setItem("accessToken", accessToken);
-}
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+      }
 
-// Keep your existing Redux login logic
-dispatch(loginSuccess(response.data));
+      // Keep your existing Redux login logic
+      dispatch(loginSuccess(response.data));
 
-navigate("/dashboard");
-```;
+      navigate("/dashboard");
     } catch (error) {
       console.log("Login error:", error);
 
-      ```
-const message =
-  error.response?.data?.message ||
-  error.response?.data?.errors?.[0] ||
-  "Login failed";
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0] ||
+        "Login failed";
 
-dispatch(loginFailure(message));
-```;
+      dispatch(loginFailure(message));
     }
   };
 

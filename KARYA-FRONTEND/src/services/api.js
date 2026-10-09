@@ -5,10 +5,12 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Attach the access token to every API request.
+// Attach access token to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
+
+    console.log("Token exists:", !!token);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -27,7 +29,6 @@ api.interceptors.response.use(
       error.response?.status,
       error.response?.data?.message || error.message,
     );
-
     return Promise.reject(error);
   },
 );
