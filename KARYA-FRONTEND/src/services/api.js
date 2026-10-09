@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 const api = axios.create({
@@ -17,7 +16,7 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
@@ -26,11 +25,11 @@ api.interceptors.response.use(
     console.error(
       "API Error:",
       error.response?.status,
-      error.response?.data?.message || error.message
+      error.response?.data?.message || error.message,
     );
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
